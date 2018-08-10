@@ -1,3 +1,8 @@
-links.txt
-*.zip
 /node_modules
+
+*.zip
+
+.env
+.vscode
+
+links.txt

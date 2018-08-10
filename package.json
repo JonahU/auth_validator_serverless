@@ -12,10 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "bluebird": "^3.5.1",
-    "jsonwebtoken": "^8.3.0",
+    "jsonwebtoken": "^8.2.1",
     "jwk-to-pem": "^2.0.0",
-    "lodash.first": "^3.0.0",
-    "request": "^2.87.0",
     "request-promise": "^4.2.2",
     "simple-oauth2": "1.5.2"
   }
