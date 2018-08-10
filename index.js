@@ -22,7 +22,13 @@ const getIdToken = async event => {
     return response;
   } catch (err) {
     // TODO: improve error handling/ message
-    console.error(err);
-    return err;
+    const errorResponse = {
+      "statusCode": 500,
+      "headers": {
+          Location: config.callbackHandlerUri(),
+      },
+      "body": `${err.name}: ${err.message}`,
+  };
+    return errorResponse;
   }
 };
