@@ -45,4 +45,6 @@ const verifyToken = ({ token }) => new Promise((resolve, reject) => {
     .catch(err => reject(new Error('Token verification failed', err)));
 });
 
+// TODO: re-add groups parsing on decoded idToken
+
 module.exports = { fetchToken, verifyToken }

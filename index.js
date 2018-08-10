@@ -1,6 +1,7 @@
 const Cognito = require('./cognito');
 const config = require('./config');
 
+// TODO: move function to a new file
 const getIdToken = async event => {
   const { code } = event.queryStringParameters;
   const token = await Cognito.fetchToken(code);
@@ -16,18 +17,15 @@ const getIdToken = async event => {
         "statusCode": 302,
         "headers": {
             Location: config.callbackHandlerUri(),
-            Authorization: idToken
+            Authorization: idToken // TODO: change this, all redirection logic will be done within this lambda
         },
     };
     return response;
-  } catch (err) {
+  } catch ({ message, name }) {
     // TODO: improve error handling/ message
     const errorResponse = {
-      "statusCode": 500,
-      "headers": {
-          Location: config.callbackHandlerUri(),
-      },
-      "body": `${err.name}: ${err.message}`,
+      "statusCode": 401,
+      "message": { [name]: message},
   };
     return errorResponse;
   }
