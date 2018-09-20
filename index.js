@@ -11,7 +11,7 @@ const { redirectTo } = require('./helper');
     if (!group) throw new Error('No group found');
     const redirectUri = config.redirectUri(group);
     if (!redirectUri) throw new Error(`No uri found for group '${group}'`);
-    return redirectTo(redirectUri, Cognito.getIdToken(token));
+    return redirectTo(redirectUri, Cognito.getIdToken(token), config.tokenHeaderName(group));
   } catch (err) {
     // TODO: improve error handling/ message
     const errorResponse = {
