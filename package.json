@@ -1,5 +1,5 @@
 {
-  "name": "auth_validator_serverless",
+  "name": "callback_handler_serverless",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
