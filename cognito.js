@@ -1,11 +1,16 @@
 const config = require('./config');
+const {
+  authorizePath,
+  cognitoGroupsClaim,
+  tokenHost,
+  tokenPath,
+  jwksUri
+} = require('./constants');
 const { first } = require('./helper');
 const jwkToPem = require('jwk-to-pem');
 const Promise = require('bluebird');
 const rp = require('request-promise');
 const verify = Promise.promisify(require('jsonwebtoken').verify);
-
-const jwksPath = `https://cognito-idp.${config.awsRegion()}.amazonaws.com/${config.poolId()}/.well-known/jwks.json`;
 
 const oauth2 = require('simple-oauth2').create({
   client: {
@@ -13,9 +18,9 @@ const oauth2 = require('simple-oauth2').create({
     secret: config.clientSecret()
   },
   auth: {
-    tokenHost: `https://${config.cognitoDomainPrefix()}.auth.${config.awsRegion()}.amazoncognito.com`,
-    tokenPath: '/oauth2/token',
-    authorizePath: `login?redirect_uri=${config.clientRedirectUri()}&response_type=code&client_id=${config.clientId()}`
+    tokenHost: tokenHost(),
+    tokenPath: tokenPath(),
+    authorizePath: authorizePath()
   }
 });
 
@@ -35,7 +40,7 @@ const fetchToken = async (lambdaEvent) => {
 };
 
 const verifyToken = async ({ token }) =>
-  rp(jwksPath)
+  rp(jwksUri())
     .then((jwksString) => {
       const jwks = JSON.parse(jwksString);
       const idPem = jwkToPem(jwks.keys[0]);
@@ -45,6 +50,6 @@ const verifyToken = async ({ token }) =>
 
 const getIdToken = token => token.token.id_token;
 
-const getGroup = decodedToken => first(decodedToken['cognito:groups']);
+const getGroup = decodedToken => first(decodedToken[cognitoGroupsClaim()]);
 
-module.exports = { fetchToken, getGroup, getIdToken, verifyToken }
+module.exports = { fetchToken, getGroup, getIdToken, verifyToken };

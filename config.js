@@ -7,4 +7,4 @@ module.exports = {
   poolId: () => process.env.POOL_ID,
   redirectUri: (group) => process.env[`REDIRECT_${group.toUpperCase()}`],
   tokenHeaderName: (group) => process.env[`TOKEN_HEADER_${group.toUpperCase()}`],
-}
+};

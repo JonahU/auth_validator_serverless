@@ -3,6 +3,7 @@
 *.zip
 
 .env
+.env.local
 .vscode
 
 links.txt
