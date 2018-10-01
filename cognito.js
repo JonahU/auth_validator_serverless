@@ -26,8 +26,7 @@ const oauth2 = simpleOauth2.create({
   },
 });
 
-const fetchToken = async (lambdaEvent) => {
-  const { code } = lambdaEvent.queryStringParameters;
+const fetchToken = async (code) => {
   const tokenConfig = {
     code,
     redirect_uri: config.clientRedirectUri(),
