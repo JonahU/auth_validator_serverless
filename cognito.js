@@ -1,34 +1,36 @@
+const jwkToPem = require('jwk-to-pem');
+const Promise = require('bluebird');
+const rp = require('request-promise');
+const simpleOauth2 = require('simple-oauth2');
+const verify = Promise.promisify(require('jsonwebtoken').verify);
+
 const config = require('./config');
 const {
   authorizePath,
   cognitoGroupsClaim,
   tokenHost,
   tokenPath,
-  jwksUri
+  jwksUri,
 } = require('./constants');
 const { first } = require('./helper');
-const jwkToPem = require('jwk-to-pem');
-const Promise = require('bluebird');
-const rp = require('request-promise');
-const verify = Promise.promisify(require('jsonwebtoken').verify);
 
-const oauth2 = require('simple-oauth2').create({
+const oauth2 = simpleOauth2.create({
   client: {
     id: config.clientId(),
-    secret: config.clientSecret()
+    secret: config.clientSecret(),
   },
   auth: {
     tokenHost: tokenHost(),
     tokenPath: tokenPath(),
-    authorizePath: authorizePath()
-  }
+    authorizePath: authorizePath(),
+  },
 });
 
 const fetchToken = async (lambdaEvent) => {
   const { code } = lambdaEvent.queryStringParameters;
   const tokenConfig = {
     code,
-    redirect_uri: config.clientRedirectUri()
+    redirect_uri: config.clientRedirectUri(),
   };
 
   return oauth2.authorizationCode.getToken(tokenConfig)
@@ -39,17 +41,21 @@ const fetchToken = async (lambdaEvent) => {
     .catch(err => Promise.reject(new Error('Error fetching token', err)));
 };
 
-const verifyToken = async ({ token }) =>
-  rp(jwksUri())
-    .then((jwksString) => {
-      const jwks = JSON.parse(jwksString);
-      const idPem = jwkToPem(jwks.keys[0]);
-      return verify(token.id_token, idPem);
-    })
-    .catch(err => Promise.reject(new Error('Token verification failed', err)));
+const verifyToken = async ({ token }) => rp(jwksUri())
+  .then((jwksString) => {
+    const jwks = JSON.parse(jwksString);
+    const idPem = jwkToPem(jwks.keys[0]);
+    return verify(token.id_token, idPem);
+  })
+  .catch(err => Promise.reject(new Error('Token verification failed', err)));
 
 const getIdToken = token => token.token.id_token;
 
 const getGroup = decodedToken => first(decodedToken[cognitoGroupsClaim()]);
 
-module.exports = { fetchToken, getGroup, getIdToken, verifyToken };
+module.exports = {
+  fetchToken,
+  getGroup,
+  getIdToken,
+  verifyToken,
+};
