@@ -13,7 +13,12 @@ const validateThenRedirect = async (lambdaEvent) => {
     if (!group) throw new Error('No group found');
     const redirectUri = config.redirectUri(group);
     if (!redirectUri) throw new Error(`No uri found for group '${group}'`);
-    return redirectTo(redirectUri, Cognito.getIdToken(token), config.tokenHeaderName(group));
+    return redirectTo(
+      redirectUri,
+      Cognito.getIdToken(token),
+      Cognito.getRefreshToken(token),
+      config.tokenHeaderName(group),
+    );
   } catch (err) {
     if (config.isDevelopment()) throw err;
     throw new Error('Unauthorized'); // Suppress error source

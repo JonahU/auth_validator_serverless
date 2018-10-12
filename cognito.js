@@ -50,11 +50,14 @@ const verifyToken = async ({ token }) => rp(jwksUri())
 
 const getIdToken = token => token.token.id_token;
 
+const getRefreshToken = token => token.token.refresh_token;
+
 const getGroup = decodedToken => first(decodedToken[cognitoGroupsClaim()]);
 
 module.exports = {
   fetchToken,
   getGroup,
   getIdToken,
+  getRefreshToken,
   verifyToken,
 };

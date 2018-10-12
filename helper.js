@@ -1,3 +1,5 @@
+const url = require('url');
+
 const createError = (message, statusCode = 401) => {
   const error = {
     statusCode,
@@ -10,12 +12,17 @@ const createError = (message, statusCode = 401) => {
 
 const first = array => (Array.isArray(array) && array[0] ? array[0] : null);
 
-const redirectTo = (uri, idToken, tokenName = 'jwt') => {
+const redirectTo = (uri, idToken, refreshToken, tokenName = 'jwt') => {
   const response = {
     statusCode: 302,
     headers: {
-      Location: uri,
-      [tokenName]: idToken,
+      Location: url.format({
+        pathname: uri,
+        query: {
+          [tokenName]: idToken,
+          refresh: refreshToken,
+        },
+      }),
     },
   };
   return response;
